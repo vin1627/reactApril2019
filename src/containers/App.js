@@ -1,15 +1,31 @@
 import React, { Component } from 'react';
+import { connect } from  'react-redux';
 import CardList from '../components/CardList';
 import SearchBox from '../components/Searchbox';
 import Scroll from '../components/Scroll';
 import ErrorBoundry from '../components/ErrorBoundry';
+import { setSearchField } from '../actions'
+
+
+const mapStateToProps = state => {
+  console.log('state : ', state )
+  return {
+    searchField: state.searchField
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return{
+    onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+  }
+}
 
 class App extends Component {
   constructor(){
     super()
     this.state = {
       robots: [],
-      searchfield:''
+      searchField:''
     }
   }
   componentDidMount(){
@@ -27,14 +43,15 @@ class App extends Component {
   }
   onSearchChange= (event)=>{
     this.setState({
-      searchfield: event.target.value
+      searchField: event.target.value
     })
   }
 
   render() {
-    const { robots, searchfield } = this.state
+
+    const { robots, searchField } = this.state
     const filterRobots = robots.filter(robot=> {
-      return robot.name.toLocaleLowerCase().includes(searchfield.toLocaleLowerCase())
+      return robot.name.toLocaleLowerCase().includes(searchField.toLocaleLowerCase())
     })
     return !robots.length ? 
        <h1 className="tc">Loading...</h1>
@@ -53,28 +70,5 @@ class App extends Component {
       )
   }
 }
-  // another way
-  // render() {
-  //   const { robots, searchfield } = this.state
-  //   const filterRobots = robots.filter(robot=> {
-  //     return robot.name.toLocaleLowerCase().includes(searchfield.toLocaleLowerCase())
-  //   })
-  //   if(!robots.length){
-  //     return <h1>Loading</h1>
-  //   }else{
-  //     return (
-  //       <div className="tc">
-  //         <h1>Robotic Devs</h1>
-  //         <SearchBox searchChange={this.onSearchChange}/>
-  //         <Scroll>
-  //           <CardList robots={filterRobots} />
-  //         </Scroll>
-            
-  //       </div>
-  //     )
 
-  //   }
-  // }
-  //}
-
-export default App
+export default connect(mapStateToProps, mapDispatchToProps)(App);
